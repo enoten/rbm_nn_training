@@ -226,9 +226,13 @@ Maximum likelihood would move the parameters to increase $$\sum_{\text{data}} \l
 
 $$
 \frac{\partial \log P(v)}{\partial \theta}
+$$
 =
+$$ 
 -\underbrace{\frac{\partial F(v)}{\partial \theta}}_{\text{positive phase}}
+$$
 +
+$$
 \underbrace{\mathbb{E}_{v' \sim P}\!\left[\frac{\partial F(v')}{\partial \theta}\right]}_{\text{negative phase}}.
 $$
 
