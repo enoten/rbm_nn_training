@@ -46,9 +46,9 @@ Each Fashion-MNIST image is 28×28 grayscale, flattened to 784 visible units. Pi
 
 The RBM's visible units are binary. A gray value is treated as a probability. On every presentation of a mini-batch the code draws
 
-\[
+$$
 v_i \sim \mathrm{Bernoulli}(\text{pixel}_i).
-\]
+$$
 
 A pixel of 0.8 therefore becomes 1 about 80% of the time and 0 the rest of the time. Repeating this draw across epochs lets one set of binary weights represent intermediate intensities. The reconstruction monitor uses a fixed threshold instead, \(v_i = 1\) when the pixel is at least 0.5, so the reported curve is comparable from epoch to epoch.
 
