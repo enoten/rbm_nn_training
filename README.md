@@ -238,18 +238,18 @@ Writing the derivatives out in the original weights and biases gives the standar
 
 $$
 \frac{\partial \log P(v)}{\partial W_{ij}}
+$$
 =
-\langle v_i h_j \rangle_{\mathrm{data}}
--
-\langle v_i h_j \rangle_{\mathrm{model}},
+$$
+\langle v_i h_j \rangle_{\mathrm{data}} - \langle v_i h_j \rangle_{\mathrm{model}},
 $$
 
 $$
 \frac{\partial \log P(v)}{\partial a_i}
+$$
 =
-\langle v_i \rangle_{\mathrm{data}}
--
-\langle v_i \rangle_{\mathrm{model}},
+$$
+\langle v_i \rangle_{\mathrm{data}} - \langle v_i \rangle_{\mathrm{model}},
 $$
 
 $$
