@@ -225,15 +225,7 @@ $$\hat v$$ is a grayscale image in $$(0, 1)^{784}$$. It is the picture in the bo
 Maximum likelihood would move the parameters to increase $$\sum_{\text{data}} \log P(v)$$. For one observation the gradient with respect to a parameter $$\theta$$ is an exact difference of two expectations:
 
 $$
-\frac{\partial \log P(v)}{\partial \theta}
-$$
-=
-$$ 
--\underbrace{\frac{\partial F(v)}{\partial \theta}}_{\text{positive phase}}
-$$
-+
-$$
-\underbrace{\mathbb{E}_{v' \sim P}\!\left[\frac{\partial F(v')}{\partial \theta}\right]}_{\text{negative phase}}.
+\frac{\partial \log P(v)}{\partial \theta} =  -\underbrace{\frac{\partial F(v)}{\partial \theta}}_{\text{positive phase}} + \underbrace{\mathbb{E}_{v' \sim P}\!\left[\frac{\partial F(v')}{\partial \theta}\right]}_{\text{negative phase}}.
 $$
 
 The positive phase is "what the data wants." It is easy, because the hidden units can be summed out in closed form. The negative phase is "what the model currently believes." It is an average of the same statistic under the model's own image distribution $$(P(v)$$, and that average is the intractable sum over images.
@@ -344,16 +336,7 @@ Each epoch shuffles the 60,000 training rows and walks through them in blocks of
 
 Inside the batch loop the pixels are re-binarized with `sample_bernoulli`, then `update` runs one CD-k step. After the epoch, reconstruction cross-entropy is computed on the first 2,048 training images, thresholded at 0.5:
 
-$$
-\mathrm{CE}
-=
--\frac{1}{N n}
-\sum
-\Bigl(
-v_i \log \hat v_i
-+
-(1-v_i)\log(1-\hat v_i)
-\Bigr),
+$$\mathrm{CE} = -\frac{1}{N n} \sum \Bigl(v_i \log \hat v_i + (1-v_i)\log(1-\hat v_i)\Bigr),
 $$
 
 where $$\hat v = P\bigl(v=1 \mid P(h=1 \mid v)\bigr)$$ and probabilities are clipped to $$[10^{-7}, 1-10^{-7}]$$ before the logarithm. A falling CE means the one-step mean-field reconstruction is assigning higher probability to the thresholded pixels. It is the number printed as `reconstruction cross-entropy`.
