@@ -285,27 +285,15 @@ Contrastive divergence (Hinton, 2002) changes the start state and the length of 
 The resulting parameter steps, with learning rate $$\eta$$, are
 
 $$
-W \leftarrow W + \eta \Bigl(
-\langle v h^\top \rangle_{0}
--
-\langle v h^\top \rangle_{k}
-\Bigr),
+W \leftarrow W + \eta \Bigl(\langle v h^\top \rangle_{0} - \langle v h^\top \rangle_{k}\Bigr),
 $$
 
 $$
-a \leftarrow a + \eta \Bigl(
-\langle v \rangle_{0}
--
-\langle v \rangle_{k}
-\Bigr),
+a \leftarrow a + \eta \Bigl(\langle v \rangle_{0} - \langle v \rangle_{k}\Bigr),
 $$
 
 $$
-b \leftarrow b + \eta \Bigl(
-\langle h \rangle_{0}
--
-\langle h \rangle_{k}
-\Bigr).
+b \leftarrow b + \eta \Bigl(\langle h \rangle_{0} - \langle h \rangle_{k}\Bigr).
 $$
 
 Subscript $$0$$ is the data distribution (the positive phase). Subscript $$k$$ is the distribution of the chain after $$k$$ Gibbs steps (the stand-in for the negative phase). For a mini-batch the code evaluates these as
