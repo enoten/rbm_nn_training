@@ -241,27 +241,21 @@ The positive phase is "what the data wants." It is easy, because the hidden unit
 Writing the derivatives out in the original weights and biases gives the standard RBM statistics. Angle brackets $$\langle \cdot \rangle_{\mathrm{data}}$$ mean the average under the data vectors together with $$P(h \mid v)$$. Angle brackets $$\langle \cdot \rangle_{\mathrm{model}}$$ mean the average under the joint $$P(v, h)$$:
 
 $$
-\frac{\partial \log P(v)}{\partial W_{ij}}
+\frac{\partial \log P(v)}{\partial W_{ij}} =
 $$
-=
 $$
 \langle v_i h_j \rangle_{\mathrm{data}} - \langle v_i h_j \rangle_{\mathrm{model}},
 $$
 
 $$
-\frac{\partial \log P(v)}{\partial a_i}
+\frac{\partial \log P(v)}{\partial a_i} = 
 $$
-=
 $$
 \langle v_i \rangle_{\mathrm{data}} - \langle v_i \rangle_{\mathrm{model}},
 $$
 
 $$
-\frac{\partial \log P(v)}{\partial b_j}
-=
-\langle h_j \rangle_{\mathrm{data}}
--
-\langle h_j \rangle_{\mathrm{model}}.
+\frac{\partial \log P(v)}{\partial b_j} = \langle h_j \rangle_{\mathrm{data}} - \langle h_j \rangle_{\mathrm{model}}.
 $$
 
 The positive half of the weight gradient is $$v_i \, P(h_j=1 \mid v)$$. The positive half of the hidden-bias gradient is $$P(h_j=1 \mid v)$$. The positive half of the visible-bias gradient is the pixel itself. All three negative halves require samples from the model.
