@@ -233,17 +233,11 @@ The positive phase is "what the data wants." It is easy, because the hidden unit
 Writing the derivatives out in the original weights and biases gives the standard RBM statistics. Angle brackets $$\langle \cdot \rangle_{\mathrm{data}}$$ mean the average under the data vectors together with $$P(h \mid v)$$. Angle brackets $$\langle \cdot \rangle_{\mathrm{model}}$$ mean the average under the joint $$P(v, h)$$:
 
 $$
-\frac{\partial \log P(v)}{\partial W_{ij}} =
-$$
-$$
-\langle v_i h_j \rangle_{\mathrm{data}} - \langle v_i h_j \rangle_{\mathrm{model}},
+\frac{\partial \log P(v)}{\partial W_{ij}} = \langle v_i h_j \rangle_{\mathrm{data}} - \langle v_i h_j \rangle_{\mathrm{model}},
 $$
 
 $$
-\frac{\partial \log P(v)}{\partial a_i} = 
-$$
-$$
-\langle v_i \rangle_{\mathrm{data}} - \langle v_i \rangle_{\mathrm{model}},
+\frac{\partial \log P(v)}{\partial a_i} = \langle v_i \rangle_{\mathrm{data}} - \langle v_i \rangle_{\mathrm{model}},
 $$
 
 $$
