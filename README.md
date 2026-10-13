@@ -64,35 +64,35 @@ An RBM is an undirected graphical model with two layers and no connections insid
 
 The energy of a joint configuration is
 
-\[
+$$
 E(v, h) = - a^\top v - b^\top h - v^\top W h.
-\]
+$$
 
 Low energy means the configuration is preferred. The Boltzmann distribution turns energies into probabilities:
 
-\[
+$$
 P(v, h) = \frac{1}{Z} \exp\bigl(-E(v, h)\bigr),
 \qquad
 Z = \sum_{v,h} \exp\bigl(-E(v, h)\bigr).
-\]
+$$
 
 \(Z\) sums over all \(2^{n+m}\) binary states. For 784 visible units and 128 hidden units that sum cannot be computed. Training has to avoid \(Z\).
 
 The distribution we care about for images is the marginal
 
-\[
+$$
 P(v) = \sum_h P(v, h) = \frac{1}{Z} \sum_h \exp\bigl(-E(v, h)\bigr).
-\]
+$$
 
 Summing out the hidden units produces an equivalent free energy of the visible vector alone:
 
-\[
+$$
 F(v) = -a^\top v - \sum_{j=1}^{m} \log\Bigl(1 + \exp\bigl(b_j + \sum_{i=1}^{n} v_i W_{ij}\bigr)\Bigr),
-\]
+$$
 
-\[
+$$
 P(v) = \frac{\exp\bigl(-F(v)\bigr)}{\sum_{v'} \exp\bigl(-F(v')\bigr)}.
-\]
+$$
 
 The remaining sum is over \(2^{784}\) images, which is still intractable. Contrastive divergence, described below, replaces that sum with a short Markov chain.
 
@@ -100,29 +100,29 @@ The remaining sum is over \(2^{784}\) images, which is still intractable. Contra
 
 The missing edges are what makes an RBM trainable. Because no two visible units share an edge, and no two hidden units share an edge, the conditional distributions factor into independent Bernoullis:
 
-\[
+$$
 P(h \mid v) = \prod_{j=1}^{m} P(h_j \mid v),
 \qquad
 P(v \mid h) = \prod_{i=1}^{n} P(v_i \mid h).
-\]
+$$
 
 Each factor is a logistic sigmoid \(\sigma(x) = 1/(1+e^{-x})\):
 
-\[
+$$
 P(h_j = 1 \mid v) = \sigma\Bigl(b_j + \sum_{i=1}^{n} v_i W_{ij}\Bigr),
-\]
+$$
 
-\[
+$$
 P(v_i = 1 \mid h) = \sigma\Bigl(a_i + \sum_{j=1}^{m} W_{ij} h_j\Bigr).
-\]
+$$
 
 In matrix form, for a batch whose rows are visible vectors,
 
-\[
+$$
 P(h=1 \mid v) = \sigma(v W + b),
 \qquad
 P(v=1 \mid h) = \sigma(h W^\top + a).
-\]
+$$
 
 These are `p_h_given_v` and `p_v_given_h`. All hidden units can be evaluated, or sampled, in one matrix product. The same is true of the visible units. That block independence is the reason Gibbs sampling on an RBM is a pair of alternating matrix multiplies rather than a sweep over individual pixels.
 
@@ -130,11 +130,11 @@ These are `p_h_given_v` and `p_v_given_h`. All hidden units can be evaluated, or
 
 \(W\) is drawn from \(\mathcal{N}(0, 0.01)\). Hidden biases \(b\) start at 0. Visible biases are set to the inverse-sigmoid of the data mean, which is the maximum-likelihood bias of a set of independent pixels:
 
-\[
+$$
 a_i = \log \frac{p_i}{1 - p_i},
 \qquad
 p_i = \mathrm{mean}(v_i),
-\]
+$$
 
 with \(p_i\) clipped slightly away from 0 and 1. Training then only has to learn the correlations that \(W\) and \(b\) represent.
 
@@ -142,11 +142,11 @@ with \(p_i\) clipped slightly away from 0 and 1. Training then only has to learn
 
 Gibbs sampling draws from a joint distribution by repeatedly replacing each block of variables with a fresh draw from its conditional distribution given everything else. For a joint \(P(v, h)\) the transition is
 
-\[
+$$
 h^{(t)} \sim P(h \mid v^{(t)}),
 \qquad
 v^{(t+1)} \sim P(v \mid h^{(t)}).
-\]
+$$
 
 This is a Markov chain. The RBM joint \(P(v, h)\) is stationary for the chain: if \((v, h)\) is already a sample from the joint, one more Gibbs step is still a sample from the joint. Under the usual regularity conditions (the chain can reach every state of positive probability, which it can here because every conditional probability is strictly between 0 and 1), the distribution of \((v^{(t)}, h^{(t)})\) converges to \(P(v, h)\) no matter where the chain started. The early samples are biased toward the start state. That burn-in is the reason a short chain and a fully mixed chain estimate different things, which is the gap between contrastive divergence and exact maximum likelihood.
 
@@ -154,13 +154,13 @@ This is a Markov chain. The RBM joint \(P(v, h)\) is stationary for the chain: i
 
 A general Boltzmann machine would resample units one at a time, because each unit's conditional depends on its neighbors in both layers. An RBM's missing intra-layer edges remove that dependence. Given \(v\), the hidden units are independent, so one draw of a uniform random matrix \(U\) produces the whole hidden sample:
 
-\[
+$$
 h_j =
 \begin{cases}
 1 & \text{if } U_j < P(h_j = 1 \mid v), \\
 0 & \text{otherwise.}
 \end{cases}
-\]
+$$
 
 Given that \(h\), the same construction produces every visible unit at once. One full step of the chain is therefore:
 
@@ -174,22 +174,22 @@ That is `gibbs_hvh`. The function returns the sampled visible state, which is th
 
 Take two visible units, one hidden unit, \(W = \begin{bmatrix} 0.5 \\ 0.5 \end{bmatrix}\), \(a = 0\), \(b = 0\), and a data vector \(v^{(0)} = (1, 0)\).
 
-\[
+$$
 P(h=1 \mid v^{(0)}) = \sigma(0.5) \approx 0.622.
-\]
+$$
 
 Suppose the Bernoulli draw returns \(h = 1\). The reconstruction probabilities are
 
-\[
+$$
 P(v_i = 1 \mid h=1) = \sigma(0.5) \approx 0.622
 \quad \text{for both } i=1 \text{ and } i=2.
-\]
+$$
 
 A second pair of coin flips might return \(v^{(1)} = (1, 1)\). Then
 
-\[
+$$
 P(h=1 \mid v^{(1)}) = \sigma(0.5 + 0.5) = \sigma(1) \approx 0.731.
-\]
+$$
 
 The chain has moved from a one-hot pixel pattern toward a pattern in which both pixels are on, because the single hidden unit ties them together. After many such steps the histogram of visited \(v\) approaches the model marginal \(P(v)\). After one step it is only a local perturbation of the data. Contrastive divergence deliberately stops at that local perturbation.
 
@@ -197,9 +197,9 @@ The chain has moved from a one-hot pixel pattern toward a pattern in which both 
 
 Sampling chooses a concrete binary state so the chain can move. The learning statistics, though, are expectations. For a Bernoulli hidden unit the conditional expectation is the probability itself:
 
-\[
+$$
 \mathbb{E}[h_j \mid v] = P(h_j = 1 \mid v).
-\]
+$$
 
 Using that probability in the gradient averages over the \(2^m\) hidden configurations analytically. Using a single sample of \(h\) in the same slot would be a much noisier estimate of the same quantity. Hinton's practical guide therefore recommends:
 
@@ -212,11 +212,11 @@ The positive phase in `cd_gradients` follows that split. \(h_0\) used in \(V^\to
 
 `reconstruct` does not sample. It replaces each conditional draw by its mean:
 
-\[
+$$
 \hat h = P(h=1 \mid v),
 \qquad
 \hat v = P(v=1 \mid \hat h).
-\]
+$$
 
 \(\hat v\) is a grayscale image in \((0, 1)^{784}\). It is the picture in the bottom row of `reconstructions.pgm`. This one-pass reconstruction is also what the cross-entropy monitor scores. It is a diagnostic of whether the conditional \(P(v \mid h)\) sends data back to something like itself. It is not the log-likelihood, and it can keep improving after the chain used for learning has stopped matching the model distribution closely.
 
@@ -224,41 +224,41 @@ The positive phase in `cd_gradients` follows that split. \(h_0\) used in \(V^\to
 
 Maximum likelihood would move the parameters to increase \(\sum_{\text{data}} \log P(v)\). For one observation the gradient with respect to a parameter \(\theta\) is an exact difference of two expectations:
 
-\[
+$$
 \frac{\partial \log P(v)}{\partial \theta}
 =
 -\underbrace{\frac{\partial F(v)}{\partial \theta}}_{\text{positive phase}}
 +
 \underbrace{\mathbb{E}_{v' \sim P}\!\left[\frac{\partial F(v')}{\partial \theta}\right]}_{\text{negative phase}}.
-\]
+$$
 
 The positive phase is "what the data wants." It is easy, because the hidden units can be summed out in closed form. The negative phase is "what the model currently believes." It is an average of the same statistic under the model's own image distribution \(P(v)\), and that average is the intractable sum over images.
 
 Writing the derivatives out in the original weights and biases gives the standard RBM statistics. Angle brackets \(\langle \cdot \rangle_{\mathrm{data}}\) mean the average under the data vectors together with \(P(h \mid v)\). Angle brackets \(\langle \cdot \rangle_{\mathrm{model}}\) mean the average under the joint \(P(v, h)\):
 
-\[
+$$
 \frac{\partial \log P(v)}{\partial W_{ij}}
 =
 \langle v_i h_j \rangle_{\mathrm{data}}
 -
 \langle v_i h_j \rangle_{\mathrm{model}},
-\]
+$$
 
-\[
+$$
 \frac{\partial \log P(v)}{\partial a_i}
 =
 \langle v_i \rangle_{\mathrm{data}}
 -
 \langle v_i \rangle_{\mathrm{model}},
-\]
+$$
 
-\[
+$$
 \frac{\partial \log P(v)}{\partial b_j}
 =
 \langle h_j \rangle_{\mathrm{data}}
 -
 \langle h_j \rangle_{\mathrm{model}}.
-\]
+$$
 
 The positive half of the weight gradient is \(v_i \, P(h_j=1 \mid v)\). The positive half of the hidden-bias gradient is \(P(h_j=1 \mid v)\). The positive half of the visible-bias gradient is the pixel itself. All three negative halves require samples from the model.
 
@@ -266,9 +266,9 @@ The positive half of the weight gradient is \(v_i \, P(h_j=1 \mid v)\). The posi
 
 For a mini-batch \(V\) with \(N\) rows, the code computes
 
-\[
+$$
 H = \sigma(V W + b)
-\]
+$$
 
 and uses the rank-1 (per row) associations \(V^\top H\). Dividing by \(N\) turns the sum into a mean. This term increases \(W_{ij}\) when visible unit \(i\) and hidden unit \(j\) turn on together in the data, and it increases \(a_i\) and \(b_j\) when those units are on more often than the model expects.
 
@@ -286,49 +286,49 @@ Contrastive divergence (Hinton, 2002) changes the start state and the length of 
 
 The resulting parameter steps, with learning rate \(\eta\), are
 
-\[
+$$
 W \leftarrow W + \eta \Bigl(
 \langle v h^\top \rangle_{0}
 -
 \langle v h^\top \rangle_{k}
 \Bigr),
-\]
+$$
 
-\[
+$$
 a \leftarrow a + \eta \Bigl(
 \langle v \rangle_{0}
 -
 \langle v \rangle_{k}
 \Bigr),
-\]
+$$
 
-\[
+$$
 b \leftarrow b + \eta \Bigl(
 \langle h \rangle_{0}
 -
 \langle h \rangle_{k}
 \Bigr).
-\]
+$$
 
 Subscript \(0\) is the data distribution (the positive phase). Subscript \(k\) is the distribution of the chain after \(k\) Gibbs steps (the stand-in for the negative phase). For a mini-batch the code evaluates these as
 
-\[
+$$
 \Delta W = \frac{1}{N}\bigl(V^\top H - {V^{-}}^\top H^{-}\bigr),
 \quad
 \Delta a = \mathrm{mean}(V - V^{-}),
 \quad
 \Delta b = \mathrm{mean}(H - H^{-}),
-\]
+$$
 
 and then
 
-\[
+$$
 W \leftarrow W + \eta\,\Delta W,
 \quad
 a \leftarrow a + \eta\,\Delta a,
 \quad
 b \leftarrow b + \eta\,\Delta b.
-\]
+$$
 
 \(V^{-}\) is the matrix of visible samples after \(k\) steps. \(H^{-}\) is \(P(h=1 \mid V^{-})\), not a sample. These three lines are the body of `update`.
 
@@ -358,7 +358,7 @@ Each epoch shuffles the 60,000 training rows and walks through them in blocks of
 
 Inside the batch loop the pixels are re-binarized with `sample_bernoulli`, then `update` runs one CD-k step. After the epoch, reconstruction cross-entropy is computed on the first 2,048 training images, thresholded at 0.5:
 
-\[
+$$
 \mathrm{CE}
 =
 -\frac{1}{N n}
@@ -368,7 +368,7 @@ v_i \log \hat v_i
 +
 (1-v_i)\log(1-\hat v_i)
 \Bigr),
-\]
+$$
 
 where \(\hat v = P\bigl(v=1 \mid P(h=1 \mid v)\bigr)\) and probabilities are clipped to \([10^{-7}, 1-10^{-7}]\) before the logarithm. A falling CE means the one-step mean-field reconstruction is assigning higher probability to the thresholded pixels. It is the number printed as `reconstruction cross-entropy`.
 
