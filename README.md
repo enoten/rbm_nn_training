@@ -58,7 +58,7 @@ Labels are used only to pick one test image per class for the picture. The RBM i
 
 An RBM is an undirected graphical model with two layers and no connections inside a layer. Visible units \(v \in \{0,1\}^n\) are the pixels. Hidden units \(h \in \{0,1\}^m\) are latent features. With \(n = 784\) and \(m = 128\), the parameters are
 
-- \(W \in \mathbb{R}^{n \times m}\), the weight from visible unit \(i\) to hidden unit \(j\)
+- \(W \in $$\mathbb{R}^{n \times m}$$), the weight from visible unit \(i\) to hidden unit \(j\)
 - \(a \in \mathbb{R}^{n}\), the visible bias
 - \(b \in \mathbb{R}^{m}\), the hidden bias
 
